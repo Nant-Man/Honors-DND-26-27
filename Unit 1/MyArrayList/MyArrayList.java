@@ -17,13 +17,18 @@ public class MyArrayList<E> {
 	/* Constructor: Create it with whatever capacity you want? */
 	@SuppressWarnings("unchecked")
 	public MyArrayList() {
-		this.internalArray = (E[])new Object[100];
+		this.internalArray = (E[]) new Object[100];
+		// objectCount = 100;
 	}
 
 	/* Constructor with initial capacity */
 	@SuppressWarnings("unchecked")
 	public MyArrayList(int initialCapacity){
-		this.internalArray = (E[])new Object[initialCapacity];
+		if (initialCapacity < 0) {
+			initialCapacity = 100;
+		}
+		this.internalArray = (E[]) new Object[initialCapacity];
+		// objectCount = initialCapacity;
 	}
 
 	/* Return the number of active slots in the array list */
@@ -38,7 +43,7 @@ public class MyArrayList<E> {
 
 	/* Get the index-th object in the list. */
 	public E get(int index) {
-		if (index >= objectCount) {
+		if (index >= objectCount || index < 0) {
 			throw new IndexOutOfBoundsException();
 		}
 		return internalArray[index];
@@ -46,7 +51,7 @@ public class MyArrayList<E> {
 
 	/* Replace the object at index with obj.  returns object that was replaced. */
 	public E set(int index, E obj) {
-		if (index >= objectCount) {
+		if (index >= objectCount || index < 0) {
 			throw new IndexOutOfBoundsException();
 		}
 		E replacedObj = internalArray[index];
@@ -58,38 +63,76 @@ public class MyArrayList<E> {
 	 otherwise returns false. */
 	public boolean contains(E obj) {
 		for (int i = 0; i < objectCount; i++) {
-			// does this break for strings??? - do I need .equals()?
-			if (internalArray[i] == obj) {
+			// took ternary from remove logic
+			if (obj == null ? internalArray[i] == null : obj.equals(internalArray[i])) {
 				return true;
 			}
+			// if (internalArray[i].equals(obj)) {
+			// 	return true;
+			// }
 		}
 		return false;
 	}
 
 	/* Insert an object at index */
-	@SuppressWarnings("unchecked")
 	public void add(int index, E obj) {
-		if ()
+		if (index > objectCount || index < 0) {
+			throw new IndexOutOfBoundsException();
+		}
+		if (objectCount == internalArray.length) {
+			resizeInternalArray();
+		}
+		if (index == objectCount) {
+			internalArray[index] = obj;
+			objectCount++;
+			return;
+		}
+		for (int i = objectCount - 1; i >= index; i--) {
+			internalArray[i + 1] = internalArray[i];
+		}
+		objectCount += 1;
+		internalArray[index] = obj;
 	}
 
 	/* Add an object to the end of the list; returns true */
 	@SuppressWarnings("unchecked")
 	public boolean add(E obj) {
-		/* ---- YOUR CODE HERE ---- */
+		// System.out.println(objectCount + ": count; " + internalArray.length + ": len");
+		if (objectCount == internalArray.length) {
+			resizeInternalArray();
+		}
+		// System.out.println(objectCount + ": count; " + internalArray.length + ": len");
+		objectCount += 1;
+		internalArray[objectCount - 1] = obj;
+		return true;
 	}
 
 	@SuppressWarnings("unchecked")
 	private void resizeInternalArray() {
-		E[] newInternalArray = (E[]) new Object[internalArray.length * 2];
+		int newSize = (internalArray.length == 0) ? 1 : internalArray.length * 2;
+		E[] newInternalArray = (E[]) new Object[newSize];
 		for (int i = 0; i < objectCount; i++) {
 			newInternalArray[i] = internalArray[i];
 		}
+		// internalArray = (E[]) new Object[internalArray.length * 2];
+		// for (int i = 0; i < newInternalArray.length; i++) {
+		// 	internalArray[i] = newInternalArray[i];
+		// }
 		internalArray = newInternalArray;
 	}
 
 	/* Remove the object at index and shift.  Returns removed object. */
 	public E remove(int index) {
-		/* ---- YOUR CODE HERE ---- */
+		if (index >= objectCount || index < 0) {
+			throw new IndexOutOfBoundsException();
+		}
+		E removedObj = internalArray[index];
+		for (int i = index + 1; i < objectCount; i++) {
+			internalArray[i - 1] = internalArray[i];
+		}
+		internalArray[objectCount - 1] = null;
+		objectCount -= 1;
+		return removedObj;
 	}
 
 	/* Removes the first occurrence of the specified element from this list, 
@@ -99,7 +142,13 @@ public class MyArrayList<E> {
 	 * Returns true if this list contained the specified element (or equivalently, 
 	 * if this list changed as a result of the call). */
 	public boolean remove(E obj) {
-		/* ---- YOUR CODE HERE ---- */
+		for (int i = 0; i < objectCount; i++) {
+			if (obj == null ? internalArray[i] == null : obj.equals(internalArray[i])) {
+				remove(i);
+				return true;
+			}
+		}
+		return false;
 	}
 
 
