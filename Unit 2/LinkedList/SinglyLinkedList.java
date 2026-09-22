@@ -1,6 +1,6 @@
 // Implements a singly-linked list.
 
-import java.util.List;
+// import java.util.List;
 
 public class SinglyLinkedList<E> {
 	private ListNode<E> head;
@@ -9,7 +9,8 @@ public class SinglyLinkedList<E> {
 
 	// Constructor: creates an empty list
 	public SinglyLinkedList() {
-		// confused as to what I should do here, will come back later if revelation from other stuff
+		head = null;
+		tail = null;
 		nodeCount = 0;
 	}
 
@@ -86,7 +87,9 @@ public class SinglyLinkedList<E> {
 	// otherwise returns false.
 	public boolean add(E obj) {
 		ListNode<E> newNode = new ListNode<E>(obj, null);
-		tail.setNext(newNode);
+		if (tail != null) {
+			tail.setNext(newNode);
+		}
 		tail = newNode;
 		if (head == null) {
 			head = newNode;
@@ -113,15 +116,19 @@ public class SinglyLinkedList<E> {
 			return false;
 		}
 		nodeCount--;
-		// check head/tail by nullness of prev / current next
-		// forgot case where len=1 and head/tail are the same
+		// check if is head/tail by nullness of prev / current next
+		if (previousNode == null && nodeToRemove.getNext() == null) {
+			head = null;
+			tail = null;
+			return true;
+		}
 		if (previousNode == null) {
 			head = nodeToRemove.getNext();
 			return true;
 		}
 		if (nodeToRemove.getNext() == null) {
-			tail = previousNode;
 			previousNode.setNext(null);
+			tail = previousNode;
 			return true;
 		}
 		previousNode.setNext(nodeToRemove.getNext());
@@ -144,7 +151,7 @@ public class SinglyLinkedList<E> {
 
 	// Replaces the i-th element with obj and returns the old value.
 	public E set(int i, E obj) {
-		if (i <= 0 || i >= nodeCount) {
+		if (i < 0 || i >= nodeCount) {
 			throw new IndexOutOfBoundsException();
 		}
 		ListNode<E> currentNode = head;
@@ -161,20 +168,94 @@ public class SinglyLinkedList<E> {
 	// Inserts obj to become the i-th element. Increments the size
 	// of the list by one.
 	public void add(int i, E obj) {
+		if (i < 0 || i > nodeCount) {
+			throw new IndexOutOfBoundsException();
+		}
+		if (i == nodeCount) {
+			add(obj); // already adjusts nodeCount
+			return;
+		}
+		nodeCount++;
+		ListNode<E> newNode = new ListNode<E>(obj, null);
+		if (i == 0) {
+			newNode.setNext(head);
+			head = newNode;
+			return;
+		}
+		// need to disconnect what's actually there, connect to new, connect new to next
+		ListNode<E> previousNode;
+		ListNode<E> nextNode;
+		ListNode<E> currentNode = head;
+		int count = 0;
+		while (count != i - 1) {
+			currentNode = currentNode.getNext();
+			count++;
+		}
+		previousNode = currentNode;
+		nextNode = currentNode.getNext();
+		previousNode.setNext(newNode);
+		newNode.setNext(nextNode);
 	}
 
 	// Removes the i-th element and returns its value.
 	// Decrements the size of the list by one.
 	public E remove(int i) {
-		return head.getValue();
-		
+		if (i < 0 || i >= nodeCount) {
+			throw new IndexOutOfBoundsException();
+		}
+		ListNode<E> currentNode = head;
+		ListNode<E> previousNode = null;
+		ListNode<E> nodeToRemove = null;
+		int count = 0;
+		while (true) {
+			if (count == i) {
+				nodeToRemove = currentNode;
+				break;
+			}
+			previousNode = currentNode;
+			currentNode = currentNode.getNext();
+			count++;
+		}
+		nodeCount--;
+		// have to adjust these for head+tail/head/tail
+		if (i == 0 && nodeCount == 1) {
+			head = null;
+			tail = null;
+			return nodeToRemove.getValue();
+		}
+		if (i == 0) {
+			head = nodeToRemove.getNext();
+			return nodeToRemove.getValue();
+		}
+		if (i == nodeCount - 1) {
+			previousNode.setNext(null);
+			tail = previousNode;
+			return nodeToRemove.getValue();
+		}
+		previousNode.setNext(nodeToRemove.getNext());
+		return nodeToRemove.getValue();
 	}
 
 	// Returns a string representation of this list exactly like that for MyArrayList.
 	public String toString() {
-		// probably going to have to use StringBuilder later
-		String strRep = "[";
-		return "";
+		// probably going to have to use StringBuilder later, but str now
+		StringBuilder strBuilder = new StringBuilder("[");
+		// String strRep = "[";
+		ListNode<E> currentListNode = head;
+		while (currentListNode != null) {
+			// strRep += currentListNode.getValue();
+			strBuilder.append(currentListNode.getValue());
+			currentListNode = currentListNode.getNext();
+			if (currentListNode == null) {
+				break;
+			}
+			// strRep += ", ";
+			strBuilder.append(", ");
+		}
+		// strRep += "]";
+		strBuilder.append("]");
+		// return strRep;
+		return strBuilder.toString();
 	}
 
 }
