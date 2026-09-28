@@ -4,7 +4,7 @@ public class SinglyLinkedListTester {
         SinglyLinkedList<String> test = new SinglyLinkedList<String>(values);
         // constructor seems to be working b/c everything else
 
-        // test toString
+        // test toString∏
         System.out.println(test);
 
         // test size pt 1
@@ -87,6 +87,46 @@ public class SinglyLinkedListTester {
         System.out.println(test);
         test.add(6, "3.5");
         System.out.println(test);
+
+        // test weird add null?
+        String[] nullValues = {null, null, "a", null, "b"};
+        test = new SinglyLinkedList<String>(nullValues);
+        System.out.println(test);
+        test.remove(null);
+        System.out.println(test);
+        test.remove(null);
+        System.out.println(test);
+        test.remove(null);
+        System.out.println(test);
+
+        // test toString cases?
+        test = new SinglyLinkedList<String>();
+        System.out.println(test);
+        test = new SinglyLinkedList<String>(new String[] {"a"});
+        System.out.println(test);
+
+        // test somethings
+        test = new SinglyLinkedList<String>(new String[] {});
+        System.out.println(test);
+        try {
+            test.remove("a");
+        } catch(Exception e) {
+            System.out.println("except");
+        }
+        test.add("a");
+        System.out.println(test.getTail().getValue());
+        test.add("b");
+        System.out.println(test.getTail().getValue());
+        System.out.println(test);
+
+        // test null list in constructor
+        try {
+            test = new SinglyLinkedList<String>(null);
+        } catch(Exception e) {
+            System.out.println(e);
+        }
+
+        test = new SinglyLinkedList<String>(values);
 
     }
 }

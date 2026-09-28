@@ -17,7 +17,17 @@ public class SinglyLinkedList<E> {
 	// Constructor: creates a list that contains
 	// all elements from the array values, in the same order
 	public SinglyLinkedList(E[] values) {
+		if (values == null) {
+			throw new NullPointerException();
+		}
 		nodeCount = values.length;
+		// System.out.println(head);
+		// System.out.println(tail);
+		// if (values.length == 0) {
+		// 	head = null;
+		// 	tail = null;
+		// 	return;
+		// }
 		ListNode<E> previousNode = null;
 		for (int i = values.length - 1; i >= 0; i--) {
 			// start from tail, then add from that!!!
@@ -60,7 +70,8 @@ public class SinglyLinkedList<E> {
 		ListNode<E> currentNode = head;
 		// null is tail's next / head when len=0
 		while (currentNode != null) {
-			if (currentNode.getValue().equals(obj)) {
+			if (obj == null ? currentNode.getValue() == null : obj.equals(currentNode.getValue())) {
+			// if (currentNode.getValue().equals(obj)) {
 				return true;
 			}
 			currentNode = currentNode.getNext();
@@ -74,7 +85,8 @@ public class SinglyLinkedList<E> {
 		ListNode<E> currentNode = head;
 		int count = 0;
 		while (currentNode != null) {
-			if (currentNode.getValue().equals(obj)) {
+			if (obj == null ? currentNode.getValue() == null : obj.equals(currentNode.getValue())) {
+			// if (currentNode.getValue().equals(obj)) {
 				return count;
 			}
 			currentNode = currentNode.getNext();
@@ -105,7 +117,8 @@ public class SinglyLinkedList<E> {
 		ListNode<E> previousNode = null;
 		ListNode<E> nodeToRemove = null;
 		while (currentNode != null) {
-			if (currentNode.getValue().equals(obj)) {
+			if (obj == null ? currentNode.getValue() == null : obj.equals(currentNode.getValue())) {
+			// if (currentNode.getValue().equals(obj)) {
 				nodeToRemove = currentNode;
 				break;
 			}
@@ -167,20 +180,21 @@ public class SinglyLinkedList<E> {
 
 	// Inserts obj to become the i-th element. Increments the size
 	// of the list by one.
-	public void add(int i, E obj) {
+	public boolean add(int i, E obj) {
+		// added return (true) - checked from documentation
 		if (i < 0 || i > nodeCount) {
 			throw new IndexOutOfBoundsException();
 		}
 		if (i == nodeCount) {
 			add(obj); // already adjusts nodeCount
-			return;
+			return true;
 		}
 		nodeCount++;
 		ListNode<E> newNode = new ListNode<E>(obj, null);
 		if (i == 0) {
 			newNode.setNext(head);
 			head = newNode;
-			return;
+			return true;
 		}
 		// need to disconnect what's actually there, connect to new, connect new to next
 		ListNode<E> previousNode;
@@ -195,6 +209,7 @@ public class SinglyLinkedList<E> {
 		nextNode = currentNode.getNext();
 		previousNode.setNext(newNode);
 		newNode.setNext(nextNode);
+		return true;
 	}
 
 	// Removes the i-th element and returns its value.
@@ -216,29 +231,31 @@ public class SinglyLinkedList<E> {
 			currentNode = currentNode.getNext();
 			count++;
 		}
-		nodeCount--;
 		// have to adjust these for head+tail/head/tail
 		if (i == 0 && nodeCount == 1) {
 			head = null;
 			tail = null;
+			nodeCount--;
 			return nodeToRemove.getValue();
 		}
 		if (i == 0) {
 			head = nodeToRemove.getNext();
+			nodeCount--;
 			return nodeToRemove.getValue();
 		}
 		if (i == nodeCount - 1) {
 			previousNode.setNext(null);
 			tail = previousNode;
+			nodeCount--;
 			return nodeToRemove.getValue();
 		}
 		previousNode.setNext(nodeToRemove.getNext());
+		nodeCount--;
 		return nodeToRemove.getValue();
 	}
 
 	// Returns a string representation of this list exactly like that for MyArrayList.
 	public String toString() {
-		// probably going to have to use StringBuilder later, but str now
 		StringBuilder strBuilder = new StringBuilder("[");
 		// String strRep = "[";
 		ListNode<E> currentListNode = head;
